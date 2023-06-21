@@ -1,0 +1,8 @@
+export enum IncidentCategory {
+  SEVERE_STORM = 'SEVERE_STORM',
+  FLOOD = 'FLOOD',
+  LANDSLIDE = 'LANDSLIDE',
+  EARTHQUAKE = 'EARTHQUAKE',
+  FIRE = 'FIRE',
+  OTHERS = 'OTHERS',
+}

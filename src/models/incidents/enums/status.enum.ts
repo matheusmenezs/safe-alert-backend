@@ -1,0 +1,7 @@
+export enum StatusIncident {
+  PENDING = 'PENDING',
+  REGISTERED = 'REGISTERED',
+  REJECTED = 'REJECTED',
+  IN_PROGRESS = 'IN_PROGRESS',
+  SOLVED = 'SOLVED',
+}

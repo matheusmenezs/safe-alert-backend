@@ -1,0 +1,135 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id                            String                 @id @default(uuid())
+  name                          String
+  role                          Role                   @default(USER)
+  email                         String                 @unique()
+  password                      String
+  telephone                     String
+  is_active                     Boolean                @default(false)
+  address_id                    String?
+  address                       Address?               @relation(fields: [address_id], references: [id])
+  created_at                    DateTime               @default(now())
+  updated_at                    DateTime               @updatedAt()
+  incidentAgentNotification     IncidentNotification[] @relation("NotificationAgentRelation")
+  incidentNotificationEmergency IncidentNotification[] @relation("NotificationEmergencyServiceRelation")
+  Incident                      Incident[]
+  Notice                        Notice[]
+}
+
+model Address {
+  id         String   @id @default(uuid())
+  number     String
+  street     String
+  district   String
+  cep        String
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt()
+  User       User[]
+}
+
+model Incident {
+  id                   String                 @id @default(uuid())
+  category             IncidentCategory
+  description          String
+  risk_scale           Int?
+  status               Status?                @default(PENDING)
+  user_id              String
+  User                 User                   @relation(fields: [user_id], references: [id])
+  created_at           DateTime               @default(now())
+  updated_at           DateTime               @updatedAt()
+  IncidentNotification IncidentNotification[]
+  IncidentDistrict     IncidentDistrict[]
+}
+
+model IncidentDistrict {
+  id          String   @id @default(uuid())
+  district_id String
+  District    District @relation(fields: [district_id], references: [id])
+  incident_id String
+  Incident    Incident @relation(fields: [incident_id], references: [id])
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt()
+}
+
+model District {
+  id             String             @id @default(uuid())
+  name           String
+  created_at     DateTime           @default(now())
+  updated_at     DateTime           @updatedAt()
+  IncidentDistrict IncidentDistrict[]
+}
+
+model IncidentNotification {
+  id                   String   @id @default(uuid())
+  agent_id             String?
+  Agent                User?    @relation("NotificationAgentRelation", fields: [agent_id], references: [id])
+  incident_id          String
+  Incident             Incident @relation(fields: [incident_id], references: [id])
+  emergency_service_id String?
+  EmergencyService     User?    @relation("NotificationEmergencyServiceRelation", fields: [emergency_service_id], references: [id])
+  created_at           DateTime @default(now())
+  updated_at           DateTime @updatedAt()
+}
+
+model Notice {
+  id          String   @id @default(uuid())
+  category    NoticeCategory
+  title       String
+  description String
+  agent_id    String?
+  Agent       User?    @relation(fields: [agent_id], references: [id])
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt()
+}
+
+model Climate {
+  id          String   @id @default(uuid())
+  name        String
+  temperature String
+  rain        String
+  wind        String
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt()
+}
+
+enum Role {
+  USER
+  AGENT
+  EMERGENCY
+}
+
+enum Status {
+  PENDING
+  REGISTERED
+  REJECTED
+  IN_PROGRESS
+  SOLVED
+}
+
+enum IncidentCategory {
+  SEVERE_STORM
+  FLOOD
+  LANDSLIDE
+  EARTHQUAKE
+  FIRE
+  OTHERS
+}
+
+enum NoticeCategory {
+  EDUCATIONAL
+  WARNING
+  METEOROLOGY
+  OTHERS
+}
