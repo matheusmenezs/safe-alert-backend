@@ -103,4 +103,12 @@ export class UsersRepository implements IUsersRepository {
 
     return deletedUser;
   }
+
+  async findByName(name: string): Promise<User> {
+    const userFound = await this.prismaService.user.findFirst({
+      where: { name },
+    });
+
+    return userFound;
+  }
 }
