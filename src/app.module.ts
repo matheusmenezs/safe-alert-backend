@@ -10,6 +10,7 @@ import { SendMailModule } from './mail/send-mail.module';
 import { AuthModule } from './auth/auth.module';
 import { TaskModule } from './notifications/task.module';
 import { IncidentsModule } from './models/incidents/incidents.module';
+import { IncidentsNotificationModule } from './models/incidents-notification/incidents-notification.module';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { IncidentsModule } from './models/incidents/incidents.module';
     SendMailModule,
     TaskModule,
     IncidentsModule,
+    IncidentsNotificationModule,
   ],
   providers: [
     PrismaService,
