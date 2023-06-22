@@ -1,5 +1,11 @@
 import { Type } from 'class-transformer';
-import { IsEmail, IsNotEmpty, IsString, ValidateNested } from 'class-validator';
+import {
+  IsEmail,
+  IsNotEmpty,
+  IsOptional,
+  IsString,
+  ValidateNested,
+} from 'class-validator';
 
 export class AddressDto {
   readonly id: string;
@@ -45,6 +51,7 @@ export class CreateUserDto {
   })
   password: string;
 
+  @IsOptional()
   @IsString({
     message: 'Invalid telephone is format',
   })

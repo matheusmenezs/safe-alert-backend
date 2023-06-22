@@ -21,6 +21,70 @@ async function main() {
     },
   });
 
+  await prisma.user.upsert({
+    where: { email: 'police@email.com' },
+    update: {},
+    create: {
+      email: 'police@email.com',
+      name: 'Police',
+      telephone: '190',
+      password: await encryptDate.encrypt(
+        process.env.AGENT_PASSWORD ?? 'Police!123456789',
+        10,
+      ),
+      is_active: true,
+      role: Role.EMERGENCY,
+    },
+  });
+
+  await prisma.user.upsert({
+    where: { email: 'samu@email.com' },
+    update: {},
+    create: {
+      email: 'samu@email.com',
+      name: 'SAMU',
+      telephone: '192',
+      password: await encryptDate.encrypt(
+        process.env.AGENT_PASSWORD ?? 'Samu!123456789',
+        10,
+      ),
+      is_active: true,
+      role: Role.EMERGENCY,
+    },
+  });
+
+  await prisma.user.upsert({
+    where: { email: 'firefighters@email.com' },
+    update: {},
+    create: {
+      email: 'firefighters@email.com',
+      name: 'Firefighters',
+      telephone: '193',
+      password: await encryptDate.encrypt(
+        process.env.AGENT_PASSWORD ?? 'Firefighters!123456789',
+        10,
+      ),
+      is_active: true,
+      role: Role.EMERGENCY,
+    },
+  });
+
+  await prisma.user.upsert({
+    where: { email: 'cemig@email.com' },
+    update: {},
+    create: {
+      email: 'cemig@email.com',
+      name: 'Cemig',
+      telephone: '116',
+      password: await encryptDate.encrypt(
+        process.env.AGENT_PASSWORD ?? 'Cemig!123456789',
+        10,
+      ),
+      is_active: true,
+      role: Role.EMERGENCY,
+    },
+  });
+
   const districts = [
     'São Vicente',
     'São Judas Tadeu',
@@ -57,13 +121,23 @@ async function main() {
     'Varginha',
   ];
 
-  await prisma.district.createMany({
-    data: districts.map((name) => ({
-      name,
-    })),
-    skipDuplicates: true,
-  });
+  async function createDistricts() {
+    try {
+      for (const name of districts) {
+        await prisma.district.upsert({
+          where: { name },
+          update: {},
+          create: { name },
+        });
+      }
+    } catch (error) {
+      console.error('Error creating districts', error);
+    }
+  }
+
+  await createDistricts();
 }
+
 main()
   .then(async () => {
     await prisma.$disconnect();
