@@ -4,6 +4,7 @@ import { IIncidentsRepository } from './i-incidents-repository';
 import { CreateIncidentDto } from '../dto/create-incident.dto';
 import { Incident } from '../entities/incident.entity';
 import { UpdateIncidentDto } from '../dto/update-incident.dto';
+import { IncidentDistrict } from '@prisma/client';
 
 @Injectable()
 export class IncidentsRepository implements IIncidentsRepository {
@@ -34,9 +35,44 @@ export class IncidentsRepository implements IIncidentsRepository {
   }
 
   async findAll(): Promise<Incident[]> {
-    const allIncidents = await this.prismaService.incident.findMany();
+    const allIncidents = await this.prismaService.incident.findMany({
+      include: {
+        IncidentDistrict: {
+          include: {
+            District: true, // Carrega as informações do distrito relacionado
+          },
+        },
+      },
+    });
 
-    return allIncidents;
+    const newIncidents = allIncidents.map((incident) => {
+      const districts = incident.IncidentDistrict.map(
+        (incidentDistrict) => incidentDistrict.District.name,
+      );
+
+      return {
+        id: incident.id,
+        category: incident.category,
+        description: incident.description,
+        risk_scale: incident.risk_scale,
+        status: incident.status,
+        user_id: incident.user_id,
+        created_at: incident.created_at,
+        updated_at: incident.updated_at,
+        districts_name: districts,
+      };
+    });
+
+    return newIncidents;
+  }
+  async findByDistrict(district_id: string): Promise<IncidentDistrict[]> {
+    const incidents = await this.prismaService.incidentDistrict.findMany({
+      where: {
+        district_id,
+      },
+    });
+
+    return incidents;
   }
 
   async findByMe(user_id: string): Promise<Incident[]> {

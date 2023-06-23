@@ -35,7 +35,7 @@ export class CreateIncidentDto {
   @IsOptional()
   status: StatusIncident;
 
-  district_name?: string;
+  district_names?: string[];
 
   @IsEmpty()
   user_id?: string;

@@ -12,6 +12,8 @@ export class Incident {
   created_at: Date;
   updated_at: Date;
 
+  districts?: string[];
+
   constructor(incident: Partial<Incident>) {
     Object.assign(this, incident);
   }

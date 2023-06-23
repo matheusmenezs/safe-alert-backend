@@ -9,6 +9,7 @@ import {
   HttpStatus,
   Req,
   UseGuards,
+  Query,
 } from '@nestjs/common';
 import { IncidentsService } from './incidents.service';
 import { CreateIncidentDto } from './dto/create-incident.dto';
@@ -52,7 +53,26 @@ export class IncidentsController {
   @Roles(Role.AGENT)
   @Get()
   findAll() {
-    return this.incidentsService.findAll();
+    const incidents = this.incidentsService.findAll();
+
+    const response = new NestResponseBuilder()
+      .setStatus(HttpStatus.OK)
+      .setBody(incidents)
+      .build();
+    return response;
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Roles(Role.AGENT)
+  @Get('/by-district')
+  findByDistrict(@Query('district_name') district_name: string) {
+    const incidents = this.incidentsService.findByDistrict(district_name);
+
+    const response = new NestResponseBuilder()
+      .setStatus(HttpStatus.OK)
+      .setBody(incidents)
+      .build();
+    return response;
   }
 
   @UseGuards(JwtAuthGuard)

@@ -20,7 +20,7 @@ export class IncidentsService {
       category,
       description,
       risk_scale,
-      district_name,
+      district_names,
       status,
     }: CreateIncidentDto,
     user_id: string,
@@ -43,19 +43,53 @@ export class IncidentsService {
       user_id,
     );
 
-    const district = await this.prismaService.district.findFirst({
-      where: {
-        name: district_name,
-      },
-    });
+    if (!newIncident) {
+      throw new BadRequestException({
+        statusCode: HttpStatus.BAD_REQUEST,
+        message: 'Incident not created',
+      });
+    }
 
-    if (district) {
-      await this.prismaService.incidentDistrict.create({
-        data: {
+    if (district_names.length === 0) {
+      const allDistricts = await this.prismaService.district.findMany();
+
+      await this.prismaService.incidentDistrict.createMany({
+        data: allDistricts.map((district) => ({
           incident_id: newIncident.id,
           district_id: district.id,
-        },
+        })),
       });
+
+      await Promise.all(allDistricts);
+    } else {
+      const createIncidentDistrictPromises = district_names.map(
+        async (district_name) => {
+          const district = await this.prismaService.district.findFirst({
+            where: {
+              name: district_name,
+            },
+          });
+
+          if (district) {
+            await this.prismaService.incidentDistrict.create({
+              data: {
+                incident_id: newIncident.id,
+                district_id: district.id,
+              },
+            });
+          }
+          return district;
+        },
+      );
+
+      if (!createIncidentDistrictPromises) {
+        throw new BadRequestException({
+          statusCode: HttpStatus.BAD_REQUEST,
+          message: 'Incident District not created',
+        });
+      }
+
+      await Promise.all(createIncidentDistrictPromises);
     }
 
     return newIncident;
@@ -72,6 +106,27 @@ export class IncidentsService {
     }
 
     return allIncidents;
+  }
+
+  async findByDistrict(district_name: string) {
+    const district = await this.prismaService.district.findFirst({
+      where: {
+        name: district_name,
+      },
+    });
+
+    if (!district) {
+      throw new BadRequestException({
+        statusCode: HttpStatus.BAD_REQUEST,
+        message: 'District not found',
+      });
+    }
+
+    const incidents = await this.incidentsRepository.findByDistrict(
+      district.id,
+    );
+
+    return incidents;
   }
 
   async findOne(id: string) {
