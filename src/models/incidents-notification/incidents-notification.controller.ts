@@ -48,12 +48,26 @@ export class IncidentsNotificationController {
   }
 
   @Get()
-  findAll() {
-    return this.incidentsNotificationService.findAll();
+  async findAll() {
+    const allNotifications = await this.incidentsNotificationService.findAll();
+
+    const response = new NestResponseBuilder()
+      .setStatus(HttpStatus.OK)
+      .setBody(allNotifications)
+      .build();
+
+    return response;
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.incidentsNotificationService.findOne(id);
+  async findOne(@Param('id') id: string) {
+    const notificationFound = this.incidentsNotificationService.findOne(id);
+
+    const response = new NestResponseBuilder()
+      .setStatus(HttpStatus.OK)
+      .setBody(notificationFound)
+      .build();
+
+    return response;
   }
 }

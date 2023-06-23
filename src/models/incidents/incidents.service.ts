@@ -61,8 +61,8 @@ export class IncidentsService {
     return newIncident;
   }
 
-  findAll() {
-    const allIncidents = this.incidentsRepository.findAll();
+  async findAll() {
+    const allIncidents = await this.incidentsRepository.findAll();
 
     if (!allIncidents) {
       throw new BadRequestException({
@@ -74,8 +74,8 @@ export class IncidentsService {
     return allIncidents;
   }
 
-  findOne(id: string) {
-    const incidentFound = this.incidentsRepository.findById(id);
+  async findOne(id: string) {
+    const incidentFound = await this.incidentsRepository.findById(id);
 
     if (!incidentFound) {
       throw new BadRequestException({
@@ -102,8 +102,8 @@ export class IncidentsService {
     return incidentFound;
   }
 
-  update(id: string, updateIncidentDto: UpdateIncidentDto) {
-    const incidentFound = this.incidentsRepository.findById(id);
+  async update(id: string, updateIncidentDto: UpdateIncidentDto) {
+    const incidentFound = await this.incidentsRepository.findById(id);
 
     if (!incidentFound) {
       throw new BadRequestException({
@@ -112,7 +112,7 @@ export class IncidentsService {
       });
     }
 
-    const updatedIncident = this.incidentsRepository.updateById(
+    const updatedIncident = await this.incidentsRepository.updateById(
       id,
       updateIncidentDto,
     );
@@ -120,8 +120,8 @@ export class IncidentsService {
     return updatedIncident;
   }
 
-  remove(id: string) {
-    const incidentFound = this.incidentsRepository.findById(id);
+  async remove(id: string) {
+    const incidentFound = await this.incidentsRepository.findById(id);
 
     if (!incidentFound) {
       throw new BadRequestException({
@@ -130,7 +130,7 @@ export class IncidentsService {
       });
     }
 
-    const deletedIncident = this.incidentsRepository.deleteById(id);
+    const deletedIncident = await this.incidentsRepository.deleteById(id);
 
     return deletedIncident;
   }

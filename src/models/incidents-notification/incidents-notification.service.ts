@@ -70,6 +70,15 @@ export class IncidentsNotificationService {
   }
 
   async findOne(id: string) {
-    return await this.incidentsNotificationRepository.findById(id);
+    const incidentNotificationFound =
+      await this.incidentsNotificationRepository.findById(id);
+
+    if (!incidentNotificationFound) {
+      throw new BadRequestException({
+        message: 'Incident notification not found',
+      });
+    }
+
+    return incidentNotificationFound;
   }
 }
