@@ -30,7 +30,7 @@ Back-end desenvolvido em Typescript utilizando o framework NestJs para criação
 ## Requisitos
 
 - Typescript
-- NodeJs
+- NodeJS
 - Docker
 - Npm ou Yarn
 - docker-compose
@@ -52,31 +52,40 @@ yarn install
 ## Variáveis de ambiente
 
 Para a devida execução do projeto é necessário configurar um arquivo de variáveis de ambiente. Na raiz do projeto existe um arquivo chamado .env.exemple que servirá de base para configuração.
-Duplique este exemplo e altere o nome para .env, neste arquivo defina as variáveis de ambiente.
+
+Duplique este arquivo `.env.example` e altere o nome para `.env`, neste arquivo deverão ser definidas as variáveis de ambiente. Em caso de dúdivas, as instruções para correta configuração das variaveis estão dispostas no arquivo.
 
 ## Banco de dados
 
-Para executar o banco utilizando docker execute o seguinte comando
+Para executar o banco utilizando docker execute o seguinte comando:
 
 ```bash
 docker-compose up -d
 ```
 
-## Executando as Migrations
+## Execução das Migrations
 
-Para atualizar seu banco de dados execute o comando abaixo, ele irá executar as migrations referentes ao schema atual, caso haja alterações no schema.prisma o mesmo irá gerar uma nova migration
+Para criar o schema execute o comando abaixo, ele irá executar as migrations referentes ao schema atual:
 
 ```bash
 npx prisma migrate dev 
 ```
 
-Caso queira criar uma nova migration execute o comando abaixo
+Caso realize alterações no schema.prisma, é necessário realizar uma nova migration, para isso execute o comando abaixo:
 
 ```bash
 npx prisma migrate dev --name nome_da_migration
 ```
 
-## Executando a aplicação
+## Execução de seed de dados
+
+Para popular o banco de dados com dados de teste execute o comando abaixo:
+
+```bash
+npx prisma db seed 
+```
+
+## Execução da aplicação
 
 Use os seguintes comandos para executar a aplicação
 
@@ -93,6 +102,13 @@ $ yarn start:dev
 $ npm run start:prod ou
 $ yarn start:prod
 ```
+
+## Rotas da aplicação
+
+As rotas estão documentadas utilizando o Swagger, para visualizar a documentação acesse o endereço `<http://localhost:port/api>`.
+Onde está o port substitua pela porta configurada no arquivo `.env`, onde a aplicação está sendo executada.
+
+Além das rotas documentadas pelo Swagger, a aplicação possui a collection gerada no Insomnia, disponível na pasta doc, na raiz do projeto.
 
 ## Support
 
