@@ -83,6 +83,22 @@ export class IncidentsRepository implements IIncidentsRepository {
     return incidentsFound;
   }
 
+  async findRegionIncident(incident_id): Promise<string[]> {
+    const incidentDistricts =
+      await this.prismaService.incidentDistrict.findMany({
+        where: { incident_id },
+        include: {
+          District: true,
+        },
+      });
+
+    const regions = incidentDistricts.map(
+      (incidentDistrict) => incidentDistrict.District.name,
+    );
+
+    return regions;
+  }
+
   async updateById(
     id: string,
     { category, description, risk_scale, status }: UpdateIncidentDto,

@@ -1,26 +1,67 @@
 <html>
-  <head>
-    <style>
-      .container { height: 100%; width: 100%; align: center; text-align: center; } .link {
-      text-decoration: none; } .confirmationButton { border-radius: 10px;
-      border: none; background: #0d6cd8; cursor: pointer; transition: all 0.5s;
-      } .confirmationButton:hover { filter: brightness(0.8); } .contentButton {
-      margin-left: 10px; margin-right: 10px; margin-top: 8px; margin-bottom:
-      8px; font-weight: bold; color: #fff; }
-    </style>
-  </head>
-  <body>
-    <main class='container'>
-      <h1>Olá {{name}},</h1>
-      <p>Para confirmar seu email clique no botão abaixo:</p>
-      <a class='link' href='{{url}}'>
-        <button class='confirmationButton'>
-          <p class='contentButton'>
-            Confirmar
-          </p>
-        </button>
-      </a>
-      <p>Se não foi você que solicitou a confirmação de email apenas ignore.</p>
-    </main>
-  </body>
+<head>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      background-color: #f4f4f4;
+    }
+
+.container {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 40px;
+  background-color: #ffffff;
+  border-radius: 5px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+h1 {
+  margin-top: 0;
+  margin-bottom: 20px;
+  color: #333333;
+}
+
+p {
+  margin-bottom: 20px;
+  color: #555555;
+}
+
+.link {
+  text-decoration: none;
+}
+
+.confirmationButton {
+  border-radius: 10px;
+  border: none;
+  background: #0d6cd8;
+  cursor: pointer;
+  transition: all 0.5s;
+}
+
+.confirmationButton:hover {
+  filter: brightness(0.8);
+}
+
+.contentButton {
+  margin: 8px;
+  font-weight: bold;
+  color: #ffffff;
+}
+  </style>
+</head>
+<body>
+  <main class='container'>
+    <h1>Olá {{name}},</h1>
+    <p>Para confirmar seu email, clique no botão abaixo:</p>
+    <a class='link' href='{{url}}'>
+      <button class='confirmationButton'>
+        <p class='contentButton'>
+          Confirmar
+        </p>
+      </button>
+    </a>
+    <p>Se não foi você quem solicitou a confirmação de email, apenas ignore.</p>
+  </main>
+</body>
 </html>

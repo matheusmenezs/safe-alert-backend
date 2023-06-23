@@ -1,18 +1,15 @@
-import { IncidentCategory } from 'prisma/prisma-client';
+import { NoticeCategory } from '../enums/category.enum';
 
-export class Incident {
+export class Notice {
   id: string;
-  category: IncidentCategory;
+  category: NoticeCategory;
   description: string;
-  risk_scale: number;
-  status: string;
-
-  user_id: string;
-
+  title: string;
+  agent_id: string;
   created_at: Date;
   updated_at: Date;
 
-  constructor(incident: Partial<Incident>) {
-    Object.assign(this, incident);
+  constructor(notice: Partial<Notice>) {
+    Object.assign(this, notice);
   }
 }

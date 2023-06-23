@@ -53,6 +53,20 @@ export class UsersRepository implements IUsersRepository {
     return allUsers;
   }
 
+  async findUsersByDistrictNames(districtNames: string[]): Promise<User[]> {
+    const users = await this.prismaService.user.findMany({
+      where: {
+        address: {
+          district: {
+            in: districtNames,
+          },
+        },
+      },
+    });
+
+    return users;
+  }
+
   async updateById(
     id: string,
     { name, email, password, is_active }: UpdateUserDto,

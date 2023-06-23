@@ -4,6 +4,7 @@ import { PrismaService } from 'prisma/prisma.service';
 import { NoticeRepository } from './repository/notice.repository';
 import { CreateNoticeDto } from './dto/create-notice.dto';
 import { UpdateNoticeDto } from './dto/update-notice.dto';
+import { SendMailService } from 'src/mail/send-mail.service';
 
 @Injectable()
 export class NoticeService {
@@ -11,6 +12,7 @@ export class NoticeService {
     private readonly noticeRepository: NoticeRepository,
     private readonly usersRepository: UsersRepository,
     private readonly prismaService: PrismaService,
+    private readonly sendMailService: SendMailService,
   ) {}
 
   async create(
@@ -30,6 +32,21 @@ export class NoticeService {
       { category, description, title },
       user_id,
     );
+
+    if (!newNotice) {
+      throw new BadRequestException({
+        statusCode: HttpStatus.BAD_REQUEST,
+        message: 'Notice not created',
+      });
+    }
+
+    await this.sendMailService.sendNoticeMail({
+      email: user.email,
+      name: user.name,
+      category,
+      description,
+      title,
+    });
 
     return newNotice;
   }

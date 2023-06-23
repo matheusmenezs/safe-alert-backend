@@ -5,6 +5,7 @@ import { UsersRepository } from '../users/repository/user.repository';
 import { IncidentsNotificationRepository } from './repository/incident-notification.repository';
 import { IncidentsNotification } from './entities/incidents-notification.entity';
 import { IncidentsRepository } from '../incidents/repository/incident.repository';
+import { SendMailService } from 'src/mail/send-mail.service';
 
 @Injectable()
 export class IncidentsNotificationService {
@@ -12,6 +13,7 @@ export class IncidentsNotificationService {
     private readonly incidentsNotificationRepository: IncidentsNotificationRepository,
     private readonly usersRepository: UsersRepository,
     private readonly incidentRepository: IncidentsRepository,
+    private readonly sendEmailService: SendMailService,
   ) {}
 
   async create(
@@ -61,6 +63,25 @@ export class IncidentsNotificationService {
         statusCode: HttpStatus.BAD_REQUEST,
       });
     }
+
+    const regionIncidents = await this.incidentRepository.findRegionIncident(
+      incident_id,
+    );
+
+    const usersInDistrict = await this.usersRepository.findUsersByDistrictNames(
+      regionIncidents,
+    );
+
+    const userEmails = usersInDistrict.map((user) => user.email);
+
+    await this.sendEmailService.sendNotificationMail({
+      email: userEmails.join(', '),
+      name: userFound.name,
+      description: incidentExists.description,
+      risk_scale: incidentExists.risk_scale,
+      category: incidentExists.category,
+      region: regionIncidents,
+    });
 
     return newIncidentNotification;
   }

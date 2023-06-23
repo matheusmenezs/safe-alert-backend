@@ -6,6 +6,7 @@ import { JwtService } from '@nestjs/jwt';
 import { UsersRepository } from '../users/repository/user.repository';
 import { PrismaService } from 'prisma/prisma.service';
 import { IncidentsRepository } from '../incidents/repository/incident.repository';
+import { SendMailService } from 'src/mail/send-mail.service';
 
 @Module({
   controllers: [IncidentsNotificationController],
@@ -16,6 +17,7 @@ import { IncidentsRepository } from '../incidents/repository/incident.repository
     UsersRepository,
     PrismaService,
     IncidentsRepository,
+    SendMailService,
   ],
 })
 export class IncidentsNotificationModule {}
