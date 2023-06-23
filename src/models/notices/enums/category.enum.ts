@@ -1,0 +1,6 @@
+export enum NoticeCategory {
+  EDUCATIONAL = 'EDUCATIONAL',
+  WARNING = 'WARNING',
+  METEOROLOGY = 'METEOROLOGY',
+  OTHERS = 'OTHERS',
+}

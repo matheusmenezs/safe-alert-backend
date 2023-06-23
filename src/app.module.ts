@@ -11,6 +11,7 @@ import { AuthModule } from './auth/auth.module';
 import { TaskModule } from './notifications/task.module';
 import { IncidentsModule } from './models/incidents/incidents.module';
 import { IncidentsNotificationModule } from './models/incidents-notification/incidents-notification.module';
+import { NoticesModule } from './models/notices/notice.module';
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { IncidentsNotificationModule } from './models/incidents-notification/inc
     TaskModule,
     IncidentsModule,
     IncidentsNotificationModule,
+    NoticesModule,
   ],
   providers: [
     PrismaService,
