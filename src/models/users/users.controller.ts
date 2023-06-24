@@ -38,7 +38,10 @@ export class UsersController {
     const response = new NestResponseBuilder()
       .setStatus(HttpStatus.CREATED)
       .setHeaders({ Location: `/users/${newUser.id}` })
-      .setBody(newUser)
+      .setBody({
+        user: newUser,
+        message: 'User created successfully, please check your email',
+      })
       .build();
 
     return response;

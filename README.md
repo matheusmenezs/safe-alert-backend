@@ -79,7 +79,7 @@ npx prisma migrate dev --name nome_da_migration
 
 ## Execução de seed de dados
 
-Para popular o banco de dados com dados de teste execute o comando abaixo:
+Para popular o banco de dados com os dados iniciais execute o comando abaixo:
 
 ```bash
 npx prisma db seed 
