@@ -1,8 +1,8 @@
-import { NestFactory } from '@nestjs/core';
-import { AppModule } from './app.module';
-import { useContainer } from 'class-validator';
 import { ValidationPipe } from '@nestjs/common';
-import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import { NestFactory } from '@nestjs/core';
+import { DocumentBuilder } from '@nestjs/swagger';
+import { useContainer } from 'class-validator';
+import { AppModule } from './app.module';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -18,8 +18,8 @@ async function bootstrap() {
     .setVersion('1.0')
     .addTag('Documentation')
     .build();
-  const document = SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('api', app, document);
+  //   const document = SwaggerModule.createDocument(app, config);
+  //   SwaggerModule.setup('api', app, document);
 
   useContainer(app.select(AppModule), { fallbackOnErrors: true });
   await app.listen(process.env.PORT);
