@@ -1,12 +1,12 @@
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { PassportStrategy } from '@nestjs/passport';
-import { Injectable } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { UsersRepository } from 'src/models/users/repository/user.repository';
 
 export interface IJwtPayload {
   sub: string;
-  username: string;
-  email: string;
+  role: string;
+  district_name: string;
   is_active: boolean;
 }
 
@@ -20,13 +20,24 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     });
   }
 
-  async validate({ sub }: IJwtPayload) {
-    const { id, role, is_active } = await this.usersRepository.findById(sub);
+  async validate(token: IJwtPayload) {
+    try {
+      const { id, role, is_active } = await this.usersRepository.findById(
+        token.sub,
+      );
 
-    return {
-      id,
-      role,
-      is_active,
-    };
+      if (!id || !role || !is_active) {
+        throw new UnauthorizedException('Invalid user');
+      }
+
+      return {
+        id,
+        role,
+        is_active,
+        district_name: token.district_name,
+      };
+    } catch (error) {
+      throw new UnauthorizedException('Invalid token');
+    }
   }
 }

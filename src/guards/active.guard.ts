@@ -12,6 +12,7 @@ interface UserRequestData {
     email: string;
     username: string;
     is_active: boolean;
+    district_name: string;
   };
 }
 

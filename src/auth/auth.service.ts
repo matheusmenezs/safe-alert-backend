@@ -48,10 +48,13 @@ export class AuthService {
     role,
     is_active,
   }: LoginUserDto): Promise<{ token: string }> {
+    const address = await this.usersRepository.findMyAddress(id);
+
     const token = await this.generateToken.generate({
       id,
       role,
       is_active,
+      district_name: address?.district,
     });
 
     return { token };

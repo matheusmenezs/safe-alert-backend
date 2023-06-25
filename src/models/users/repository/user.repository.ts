@@ -5,6 +5,7 @@ import { SetRoleDto } from '../dto/set-role-dto';
 import { UpdateUserDto } from '../dto/update-user.dto';
 import { User } from '../entities/user.entity';
 import { IUsersRepository } from './i-users-repository';
+import { Address } from '@prisma/client';
 
 @Injectable()
 export class UsersRepository implements IUsersRepository {
@@ -65,6 +66,17 @@ export class UsersRepository implements IUsersRepository {
     });
 
     return users;
+  }
+
+  async findMyAddress(id: string): Promise<Address> {
+    const userFound = await this.prismaService.user.findFirst({
+      where: { id },
+      include: {
+        address: true,
+      },
+    });
+
+    return userFound.address;
   }
 
   async updateById(

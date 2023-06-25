@@ -4,4 +4,5 @@ export class LoginUserDto {
   id: string;
   role: Role;
   is_active: boolean;
+  district_name: string;
 }

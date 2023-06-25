@@ -21,6 +21,7 @@ export interface IUserRequestData {
     email: string;
     role: Role;
     is_active: boolean;
+    district_name: string;
   };
 }
 
