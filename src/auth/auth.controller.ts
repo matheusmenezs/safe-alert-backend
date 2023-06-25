@@ -1,19 +1,19 @@
 import {
   Controller,
-  Post,
-  UseGuards,
-  Req,
-  HttpStatus,
   Get,
+  HttpStatus,
   Param,
+  Post,
+  Req,
+  UseGuards,
 } from '@nestjs/common';
-import { NestResponseBuilder } from '../core/http/nestResponseBuilder';
-import { NestResponse } from '../core/http/nestResponse';
-import { AuthService } from './auth.service';
-import { LocalAuthGuard } from '../guards/local.guard';
 import { ApiTags } from '@nestjs/swagger';
+import { NestResponse } from '../core/http/nestResponse';
+import { NestResponseBuilder } from '../core/http/nestResponseBuilder';
 import { ActiveGuard } from '../guards/active.guard';
+import { LocalAuthGuard } from '../guards/local.guard';
 import { Role } from '../models/users/enums/role.enum';
+import { AuthService } from './auth.service';
 
 export interface IUserRequestData {
   user: {
@@ -34,11 +34,18 @@ export class AuthController {
   @UseGuards(LocalAuthGuard)
   @Post('login')
   async login(@Req() { user }: IUserRequestData): Promise<NestResponse> {
-    const tokens = await this.authService.login(user);
+    const token = await this.authService.login(user);
+
+    const replyContent = {
+      ...token,
+      role: user.role,
+      district: user.district_name,
+      id: user.id,
+    };
 
     const response = new NestResponseBuilder()
       .setStatus(HttpStatus.OK)
-      .setBody(tokens)
+      .setBody(replyContent)
       .build();
 
     return response;
