@@ -12,6 +12,7 @@ import { TaskModule } from './notifications/task.module';
 import { IncidentsModule } from './models/incidents/incidents.module';
 import { IncidentsNotificationModule } from './models/incidents-notification/incidents-notification.module';
 import { NoticesModule } from './models/notices/notice.module';
+import { ClimateModule } from './models/climate/climate.module';
 
 @Module({
   imports: [
@@ -22,6 +23,7 @@ import { NoticesModule } from './models/notices/notice.module';
     IncidentsModule,
     IncidentsNotificationModule,
     NoticesModule,
+    ClimateModule,
   ],
   providers: [
     PrismaService,
