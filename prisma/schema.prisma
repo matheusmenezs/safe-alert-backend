@@ -64,10 +64,10 @@ model IncidentDistrict {
 }
 
 model District {
-  id             String             @id @default(uuid())
-  name           String             @unique
-  created_at     DateTime           @default(now())
-  updated_at     DateTime           @updatedAt()
+  id               String             @id @default(uuid())
+  name             String             @unique
+  created_at       DateTime           @default(now())
+  updated_at       DateTime           @updatedAt()
   IncidentDistrict IncidentDistrict[]
 }
 
@@ -84,24 +84,30 @@ model IncidentNotification {
 }
 
 model Notice {
-  id          String   @id @default(uuid())
+  id          String         @id @default(uuid())
   category    NoticeCategory
   title       String
   description String
   agent_id    String?
-  Agent       User?    @relation(fields: [agent_id], references: [id])
-  created_at  DateTime @default(now())
-  updated_at  DateTime @updatedAt()
+  Agent       User?          @relation(fields: [agent_id], references: [id])
+  created_at  DateTime       @default(now())
+  updated_at  DateTime       @updatedAt()
 }
 
 model Climate {
-  id          String   @id @default(uuid())
-  name        String
-  temperature String
-  rain        String
-  wind        String
-  created_at  DateTime @default(now())
-  updated_at  DateTime @updatedAt()
+  id                 String   @id @default(uuid())
+  humidity_min       Int
+  humidity_max       Int
+  temperature_min    Int
+  temperature_max    Int
+  rain_precipitation Int
+  rain_probability   Int
+  wind_velocity      Int
+  wind_direction     String
+  text               String
+  date               String   @unique
+  created_at         DateTime @default(now())
+  updated_at         DateTime @updatedAt()
 }
 
 enum Role {
