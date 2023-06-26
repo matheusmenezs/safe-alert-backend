@@ -30,6 +30,7 @@ export class NoticesController {
 
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
+  @Roles(Role.AGENT, Role.EMERGENCY)
   @Post()
   async create(
     @Body() createNoticeDto: CreateNoticeDto,

@@ -47,6 +47,9 @@ export class IncidentsNotificationController {
     return response;
   }
 
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard)
+  @Roles(Role.AGENT)
   @Get()
   async findAll() {
     const allNotifications = await this.incidentsNotificationService.findAll();
@@ -59,6 +62,9 @@ export class IncidentsNotificationController {
     return response;
   }
 
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard)
+  @Roles(Role.AGENT)
   @Get(':id')
   async findOne(@Param('id') id: string) {
     const notificationFound = this.incidentsNotificationService.findOne(id);
