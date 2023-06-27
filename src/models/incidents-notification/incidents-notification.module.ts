@@ -7,6 +7,7 @@ import { UsersRepository } from '../users/repository/user.repository';
 import { PrismaService } from 'prisma/prisma.service';
 import { IncidentsRepository } from '../incidents/repository/incident.repository';
 import { SendMailService } from 'src/mail/send-mail.service';
+import { SendNotificationService } from 'src/notifications/send-notification.service';
 
 @Module({
   controllers: [IncidentsNotificationController],
@@ -18,6 +19,7 @@ import { SendMailService } from 'src/mail/send-mail.service';
     PrismaService,
     IncidentsRepository,
     SendMailService,
+    SendNotificationService,
   ],
 })
 export class IncidentsNotificationModule {}

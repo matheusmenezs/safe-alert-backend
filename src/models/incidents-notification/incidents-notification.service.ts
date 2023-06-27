@@ -1,4 +1,9 @@
-import { BadRequestException, HttpStatus, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  HttpStatus,
+  Injectable,
+  Logger,
+} from '@nestjs/common';
 import { CreateIncidentsNotificationDto } from './dto/create-incidents-notification.dto';
 import { IUserRequestData } from 'src/auth/auth.controller';
 import { UsersRepository } from '../users/repository/user.repository';
@@ -6,6 +11,7 @@ import { IncidentsNotificationRepository } from './repository/incident-notificat
 import { IncidentsNotification } from './entities/incidents-notification.entity';
 import { IncidentsRepository } from '../incidents/repository/incident.repository';
 import { SendMailService } from 'src/mail/send-mail.service';
+import { SendNotificationService } from 'src/notifications/send-notification.service';
 
 @Injectable()
 export class IncidentsNotificationService {
@@ -14,7 +20,10 @@ export class IncidentsNotificationService {
     private readonly usersRepository: UsersRepository,
     private readonly incidentRepository: IncidentsRepository,
     private readonly sendEmailService: SendMailService,
+    private readonly sendNotificationService: SendNotificationService,
   ) {}
+
+  private readonly logger = new Logger();
 
   async create(
     { emergency_service_id, incident_id }: CreateIncidentsNotificationDto,
@@ -51,6 +60,49 @@ export class IncidentsNotificationService {
       }
     }
 
+    const regionIncidents = await this.incidentRepository.findRegionIncident(
+      incident_id,
+    );
+
+    const message = {
+      description: incidentExists.description,
+      risk_scale: incidentExists.risk_scale,
+      category: incidentExists.category,
+      region: regionIncidents,
+    };
+
+    const results = await Promise.all(
+      regionIncidents.map(async (region) => {
+        const regionFormatted = region.replace(/\s/g, '');
+        try {
+          await this.sendNotificationService.sendNotification(
+            regionFormatted,
+            message,
+          );
+          return { success: true };
+        } catch (error) {
+          this.logger.error(error);
+          return {
+            success: false,
+            region: regionFormatted,
+          };
+        }
+      }),
+    );
+    //Todo: improve treatment of errors
+    const errorResult = results.find((result) => !result.success);
+    if (errorResult) {
+      await this.sendNotificationService
+        .sendNotification(errorResult.region, message)
+        .catch((error) => {
+          this.logger.error(error);
+        });
+      // throw new BadRequestException({
+      //   message: `Couldn't send notification to ${errorResult.region}`,
+      //   statusCode: HttpStatus.FAILED_DEPENDENCY,
+      // });
+    }
+
     const newIncidentNotification =
       await this.incidentsNotificationRepository.create(
         { incident_id, emergency_service_id },
@@ -63,25 +115,6 @@ export class IncidentsNotificationService {
         statusCode: HttpStatus.BAD_REQUEST,
       });
     }
-
-    const regionIncidents = await this.incidentRepository.findRegionIncident(
-      incident_id,
-    );
-
-    const usersInDistrict = await this.usersRepository.findUsersByDistrictNames(
-      regionIncidents,
-    );
-
-    const userEmails = usersInDistrict.map((user) => user.email);
-
-    await this.sendEmailService.sendNotificationMail({
-      email: userEmails.join(', '),
-      name: userFound.name,
-      description: incidentExists.description,
-      risk_scale: incidentExists.risk_scale,
-      category: incidentExists.category,
-      region: regionIncidents,
-    });
 
     return newIncidentNotification;
   }

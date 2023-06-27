@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import Axios from 'axios';
+import { Exception } from 'handlebars';
 
 @Injectable()
 export class SendNotificationService {
@@ -12,7 +13,10 @@ export class SendNotificationService {
         return res.data;
       })
       .catch((err) => {
-        return err;
+        throw new Exception(
+          'NTFY ' + err.response.data.error,
+          err.response.status,
+        );
       });
 
     return response;
