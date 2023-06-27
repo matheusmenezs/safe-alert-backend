@@ -10,7 +10,10 @@ export class User {
   @Exclude()
   password: string;
 
+  @Exclude()
   address_id?: string;
+  district_name?: string;
+
   is_active: boolean;
   role: Role;
 

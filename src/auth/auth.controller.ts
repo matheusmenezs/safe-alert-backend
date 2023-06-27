@@ -36,16 +36,9 @@ export class AuthController {
   async login(@Req() { user }: IUserRequestData): Promise<NestResponse> {
     const token = await this.authService.login(user);
 
-    const replyContent = {
-      ...token,
-      role: user.role,
-      district: user.district_name,
-      id: user.id,
-    };
-
     const response = new NestResponseBuilder()
       .setStatus(HttpStatus.OK)
-      .setBody(replyContent)
+      .setBody(token)
       .build();
 
     return response;

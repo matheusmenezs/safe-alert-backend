@@ -72,6 +72,8 @@ export class UsersService {
   async findById(id: string): Promise<User> {
     const user = await this.usersRepository.findById(id);
 
+    const userAddr = await this.usersRepository.findMyAddress(id);
+
     if (!user) {
       throw new NotFoundException({
         statusCode: HttpStatus.NOT_FOUND,
@@ -79,7 +81,12 @@ export class UsersService {
       });
     }
 
-    return new User(user);
+    const userWithDistrict = {
+      ...user,
+      district_name: userAddr?.district,
+    };
+
+    return new User(userWithDistrict);
   }
 
   async findAllEmergencyServices(): Promise<User[]> {
