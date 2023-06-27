@@ -95,8 +95,8 @@ export class IncidentsService {
     return newIncident;
   }
 
-  async findAll() {
-    const allIncidents = await this.incidentsRepository.findAll();
+  async findAll(user_role: string) {
+    let allIncidents = await this.incidentsRepository.findAll();
 
     if (!allIncidents) {
       throw new BadRequestException({
@@ -105,10 +105,16 @@ export class IncidentsService {
       });
     }
 
+    if (user_role == Role.USER) {
+      allIncidents = allIncidents.filter(
+        (incidents) => incidents.status == StatusIncident.REGISTERED,
+      );
+    }
+
     return allIncidents;
   }
 
-  async findByDistrict(district_name: string) {
+  async findByDistrict(district_name: string, user_role: string) {
     const district = await this.prismaService.district.findFirst({
       where: {
         name: district_name,
@@ -122,9 +128,27 @@ export class IncidentsService {
       });
     }
 
-    const incidents = await this.incidentsRepository.findByDistrict(
+    const incidentsDistrict = await this.incidentsRepository.findByDistrict(
       district.id,
     );
+
+    const incidentsPromise = incidentsDistrict.map(async (incidentDistrict) => {
+      const incident = await this.prismaService.incident.findFirst({
+        where: {
+          id: incidentDistrict.incident_id,
+        },
+      });
+
+      return incident;
+    });
+
+    let incidents = await Promise.all(incidentsPromise);
+
+    if (user_role == Role.USER) {
+      incidents = incidents.filter(
+        (incident) => incident.status == StatusIncident.REGISTERED,
+      );
+    }
 
     return incidents;
   }

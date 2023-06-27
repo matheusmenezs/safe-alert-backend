@@ -50,10 +50,9 @@ export class IncidentsController {
   }
 
   @UseGuards(JwtAuthGuard)
-  @Roles(Role.AGENT)
   @Get()
-  findAll() {
-    const incidents = this.incidentsService.findAll();
+  findAll(@Req() { user }: IUserRequestData) {
+    const incidents = this.incidentsService.findAll(user.role);
 
     const response = new NestResponseBuilder()
       .setStatus(HttpStatus.OK)
@@ -63,10 +62,15 @@ export class IncidentsController {
   }
 
   @UseGuards(JwtAuthGuard)
-  @Roles(Role.AGENT)
   @Get('/by-district')
-  findByDistrict(@Query('district_name') district_name: string) {
-    const incidents = this.incidentsService.findByDistrict(district_name);
+  findByDistrict(
+    @Query('district_name') district_name: string,
+    @Req() { user }: IUserRequestData,
+  ) {
+    const incidents = this.incidentsService.findByDistrict(
+      district_name,
+      user.role,
+    );
 
     const response = new NestResponseBuilder()
       .setStatus(HttpStatus.OK)
