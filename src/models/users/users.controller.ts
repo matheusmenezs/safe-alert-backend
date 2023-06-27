@@ -73,6 +73,18 @@ export class UsersController {
     return response;
   }
 
+  @UseGuards(JwtAuthGuard)
+  @Get('/emergency')
+  async findEmergency(): Promise<NestResponse> {
+    const emergencyFound = await this.usersService.findAllEmergencyServices();
+
+    const response = new NestResponseBuilder()
+      .setStatus(HttpStatus.OK)
+      .setBody(emergencyFound)
+      .build();
+    return response;
+  }
+
   @Roles(Role.AGENT, Role.EMERGENCY)
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()

@@ -6,11 +6,11 @@ import { UpdateUserDto } from '../dto/update-user.dto';
 import { User } from '../entities/user.entity';
 import { IUsersRepository } from './i-users-repository';
 import { Address } from '@prisma/client';
+import { Role } from '../enums/role.enum';
 
 @Injectable()
 export class UsersRepository implements IUsersRepository {
   constructor(private readonly prismaService: PrismaService) {}
-
   async create({
     email,
     name,
@@ -36,6 +36,14 @@ export class UsersRepository implements IUsersRepository {
     });
 
     return userFound;
+  }
+
+  async findAllEmergencyServices(): Promise<User[]> {
+    const allEmergencyServices = await this.prismaService.user.findMany({
+      where: { role: Role.EMERGENCY },
+    });
+
+    return allEmergencyServices;
   }
 
   async findByEmail(email: string): Promise<User> {

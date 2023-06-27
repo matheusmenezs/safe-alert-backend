@@ -82,6 +82,13 @@ export class UsersService {
     return new User(user);
   }
 
+  async findAllEmergencyServices(): Promise<User[]> {
+    const allEmergencyServices =
+      await this.usersRepository.findAllEmergencyServices();
+
+    return allEmergencyServices.map((user) => new User(user));
+  }
+
   async update(
     id: string,
     { name, email, password }: UpdateUserDto,
