@@ -89,7 +89,7 @@ export class IncidentsNotificationService {
         }
       }),
     );
-    //Todo: improve treatment of errors
+
     const errorResult = results.find((result) => !result.success);
     if (errorResult) {
       await this.sendNotificationService
@@ -97,10 +97,6 @@ export class IncidentsNotificationService {
         .catch((error) => {
           this.logger.error(error);
         });
-      // throw new BadRequestException({
-      //   message: `Couldn't send notification to ${errorResult.region}`,
-      //   statusCode: HttpStatus.FAILED_DEPENDENCY,
-      // });
     }
 
     const newIncidentNotification =
