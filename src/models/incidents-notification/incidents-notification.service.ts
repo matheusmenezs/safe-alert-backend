@@ -73,10 +73,10 @@ export class IncidentsNotificationService {
 
     const results = await Promise.all(
       regionIncidents.map(async (region) => {
-        const regionFormatted = region.replace(/\s/g, '');
+        const regionChannel = region.replace(/\s/g, '');
         try {
           await this.sendNotificationService.sendNotification(
-            regionFormatted,
+            regionChannel,
             message,
           );
           return { success: true };
@@ -84,7 +84,7 @@ export class IncidentsNotificationService {
           this.logger.error(error);
           return {
             success: false,
-            region: regionFormatted,
+            region: regionChannel,
           };
         }
       }),
