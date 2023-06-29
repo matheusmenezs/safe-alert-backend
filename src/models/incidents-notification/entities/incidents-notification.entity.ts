@@ -3,7 +3,7 @@ export class IncidentsNotification {
   agent_id: string;
   incident_id: string;
   emergency_service_id?: string;
-
+  emergency_service_name?: string;
   created_at: Date;
   updated_at?: Date;
 
