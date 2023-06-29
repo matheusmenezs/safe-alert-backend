@@ -26,7 +26,7 @@ export class IncidentsNotificationService {
   private readonly logger = new Logger();
 
   async create(
-    { emergency_service_id, incident_id }: CreateIncidentsNotificationDto,
+    { emergency_service_name, incident_id }: CreateIncidentsNotificationDto,
     { user }: IUserRequestData,
   ): Promise<IncidentsNotification> {
     const userFound = await this.usersRepository.findById(user.id);
@@ -47,19 +47,6 @@ export class IncidentsNotificationService {
       });
     }
 
-    if (emergency_service_id) {
-      const emergencyServiceExists = await this.usersRepository.findById(
-        emergency_service_id,
-      );
-
-      if (!emergencyServiceExists) {
-        throw new BadRequestException({
-          message: 'Emergency service not exists',
-          statusCode: HttpStatus.BAD_REQUEST,
-        });
-      }
-    }
-
     const regionIncidents = await this.incidentRepository.findRegionIncident(
       incident_id,
     );
@@ -70,6 +57,32 @@ export class IncidentsNotificationService {
       category: incidentExists.category,
       region: regionIncidents,
     };
+
+    let emergencyServiceExists = null;
+
+    if (emergency_service_name) {
+      emergencyServiceExists = await this.usersRepository.findByName(
+        emergency_service_name,
+      );
+
+      if (!emergencyServiceExists) {
+        throw new BadRequestException({
+          message: 'Emergency service not exists',
+          statusCode: HttpStatus.BAD_REQUEST,
+        });
+      }
+
+      try {
+        const emergencyChannel = emergencyServiceExists.name.replace(/\s/g, '');
+
+        await this.sendNotificationService.sendNotification(
+          emergencyChannel,
+          message,
+        );
+      } catch (error) {
+        this.logger.error(error);
+      }
+    }
 
     const results = await Promise.all(
       regionIncidents.map(async (region) => {
@@ -101,7 +114,8 @@ export class IncidentsNotificationService {
 
     const newIncidentNotification =
       await this.incidentsNotificationRepository.create(
-        { incident_id, emergency_service_id },
+        incident_id,
+        emergencyServiceExists?.id,
         user.id,
       );
 

@@ -12,7 +12,7 @@ export class CreateIncidentsNotificationDto {
 
   @IsOptional()
   @IsString({
-    message: 'Emergency service id must be a string',
+    message: 'Emergency service name must be a string',
   })
-  emergency_service_id?: string;
+  emergency_service_name?: string;
 }
