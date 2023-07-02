@@ -10,8 +10,8 @@ import { UsersRepository } from '../users/repository/user.repository';
 import { IncidentsNotificationRepository } from './repository/incident-notification.repository';
 import { IncidentsNotification } from './entities/incidents-notification.entity';
 import { IncidentsRepository } from '../incidents/repository/incident.repository';
-import { SendMailService } from 'src/mail/send-mail.service';
 import { SendNotificationService } from 'src/notifications/send-notification.service';
+import { PrismaService } from 'prisma/prisma.service';
 
 @Injectable()
 export class IncidentsNotificationService {
@@ -19,7 +19,7 @@ export class IncidentsNotificationService {
     private readonly incidentsNotificationRepository: IncidentsNotificationRepository,
     private readonly usersRepository: UsersRepository,
     private readonly incidentRepository: IncidentsRepository,
-    private readonly sendEmailService: SendMailService,
+    private readonly prismaService: PrismaService,
     private readonly sendNotificationService: SendNotificationService,
   ) {}
 
@@ -50,6 +50,12 @@ export class IncidentsNotificationService {
     const regionIncidents = await this.incidentRepository.findRegionIncident(
       incident_id,
     );
+
+    const allRegions = await this.prismaService.district.findMany({
+      select: {
+        name: true,
+      },
+    });
 
     const message = {
       description: incidentExists.description,
@@ -84,32 +90,40 @@ export class IncidentsNotificationService {
       }
     }
 
-    const results = await Promise.all(
-      regionIncidents.map(async (region) => {
-        const regionChannel = region.replace(/\s/g, '');
-        try {
-          await this.sendNotificationService.sendNotification(
-            regionChannel,
-            message,
-          );
-          return { success: true };
-        } catch (error) {
-          this.logger.error(error);
-          return {
-            success: false,
-            region: regionChannel,
-          };
-        }
-      }),
-    );
+    if (regionIncidents.length == allRegions.length) {
+      try {
+        await this.sendNotificationService.sendNotification('Cidade', message);
+      } catch (error) {
+        this.logger.error(error);
+      }
+    } else {
+      const results = await Promise.all(
+        regionIncidents.map(async (region) => {
+          const regionChannel = region.replace(/\s/g, '');
+          try {
+            await this.sendNotificationService.sendNotification(
+              regionChannel,
+              message,
+            );
+            return { success: true };
+          } catch (error) {
+            this.logger.error(error);
+            return {
+              success: false,
+              region: regionChannel,
+            };
+          }
+        }),
+      );
 
-    const errorResult = results.find((result) => !result.success);
-    if (errorResult) {
-      await this.sendNotificationService
-        .sendNotification(errorResult.region, message)
-        .catch((error) => {
-          this.logger.error(error);
-        });
+      const errorResult = results.find((result) => !result.success);
+      if (errorResult) {
+        await this.sendNotificationService
+          .sendNotification(errorResult.region, message)
+          .catch((error) => {
+            this.logger.error(error);
+          });
+      }
     }
 
     const newIncidentNotification =
